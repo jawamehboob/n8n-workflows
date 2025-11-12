@@ -1,0 +1,742 @@
+{
+  "name": "Cover Letter Writer",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1V8g6lX8wTtKVFHYFN4Jh803jKiKol85-",
+          "mode": "list",
+          "cachedResultName": "Cover Letter Requests",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1V8g6lX8wTtKVFHYFN4Jh803jKiKol85-"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b5ca9d62-fa0f-49fc-a11e-2162db90b7a2",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "37192e0a-4757-4042-b07c-5ce2ab3e24c0",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "abc6bb46-2e0c-493d-b79e-3ed545b21dc2",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Mid Level",
+              "description": "\"Mid level\", \"Mid-level\""
+            },
+            {
+              "category": "Entry Level",
+              "description": "\"Entry level\", \"Entry-level\""
+            },
+            {
+              "category": "Executive Level",
+              "description": "\"Executive level\", \"Executive-level\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        -16
+      ],
+      "id": "9058601d-e2bc-481d-994c-4192839d1f31",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        208
+      ],
+      "id": "38bcde3a-c28d-4de0-b2d2-1816a53d61bf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        -464
+      ],
+      "id": "895b651c-dbf2-411e-88de-f48337da8599",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Client Name",
+              "description": "the name of client",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        -320
+      ],
+      "id": "2605a1e6-4cd8-4de6-9e3b-7f8f713dcdbe",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        -464
+      ],
+      "id": "5fa91ef8-16d0-45d9-b754-b862f7276de7",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        80
+      ],
+      "id": "f1b0ea91-c59d-434c-b936-66dfe4b3540d",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Client Name",
+              "description": "the name of client",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        -96
+      ],
+      "id": "ce4b95ca-8ff7-4b01-833a-7d17eb2610d4",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        80
+      ],
+      "id": "18b85c5f-c9bb-4349-9f11-74db64679c29",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        416
+      ],
+      "id": "81037bbf-0859-4c19-b60e-066241418aea",
+      "name": "OpenAI Chat Model5",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Client Name",
+              "description": "the name of client",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        240
+      ],
+      "id": "cf3130c8-e89a-4673-8895-3064c94ca066",
+      "name": "Information Extractor2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        416
+      ],
+      "id": "6e55603a-8052-4d08-9e6d-a1dee35f229e",
+      "name": "OpenAI Chat Model6",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client Resume and Job Description to create mid level cover letter:\n {{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an expert mid level cover letter writer agent\n\n## Your Task\nWrite the Mid level cover letter for resume based on the example template\n\n## Rules\n- Don't be over explanatory\n- Cover letter must be 1 page longer after formatting the document\n- Skip the steps of example template which are not included in the person details\n- Follow the template structure\n- Use only given details\n- Don't write anything twice\n- Output cover letter only\n\n## Example Template\n\n[Your Name]  \n[Email] | [Phone] | [LinkedIn Profile]  \n[Date]  \n\nDear [Hiring Manager Name],\nRE: Application for the position of [Insert Role]\n\n**OPENING – Achievement Hook**  \nOver the past [X] years in [industry/role], I’ve consistently delivered [type of results]. Most recently, I [specific major achievement with quantified impact], which directly addresses the [specific challenge] that [Company Name] is currently facing.\n\n**BODY – Relevant Experience, Collaboration & Impact**  \nIn my role as [Current/Recent Position] at [Company], I’ve developed expertise in [relevant areas] that align perfectly with your needs and collaborated closely with cross-functional teams:  \n-  [Achievement #1 with quantified results and business impact; e.g., “Led a 5-person agile team to reduce customer onboarding time by 30%”]  \n-  [Achievement #2 demonstrating leadership or process improvement; include scope; e.g., “Managed end-to-end rollout of CRM upgrade across three regional offices, boosting sales efficiency by 20%”]  \n-  [Achievement #3 showing strategic thinking or innovation; e.g., “Introduced data-driven marketing workflows that increased lead conversion by 15%”]\n\nWhat particularly draws me to [Company Name] is [specific company research/connection], and my experience [specific relevant experience] positions me to immediately contribute to [specific company goal/challenge].\n\n**CLOSING – Strategic Value & Proactive CTA**  \nI’m confident that my track record in [key strength] and deep understanding of [relevant industry/function] would help [Company Name] achieve [specific objective]. I’d welcome the chance to share a brief case study of my work on [relevant project] and discuss how we can drive similar results for your team.\n\nSincerely,  \n[Your Name]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -320
+      ],
+      "id": "0ac67bf2-21d2-4cdf-a5a4-73e3f8e453ba",
+      "name": "Mid Cover Letter Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client Resume and Job Description to create entry level cover letter:\n {{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an expert entry level cover letter writer agent\n\n## Your Task\nWrite the Entry level cover letter for resume based on the example template\n\n## Rules\n- Don't be over explanatory\n- Cover letter must be 1 page longer after formatting the document\n- Skip the steps of example template which are not included in the person details\n- Follow the template structure\n- Use only given details\n- Don't write anything twice\n- Output cover letter only\n\n## Example Template\n\n[Your Name]\n[Email] | [Phone] | [LinkedIn Profile]\n[Date]\n\nDear [Hiring Manager Name],\nRE: Application for the position of [Insert Role]\n\nOPENING – Problem Identification & Insight\nI’ve been following [Company Name]’s efforts to address [specific challenge or project], particularly [specific detail or initiative]. As a recent [Degree] graduate with hands-on experience in [relevant area], I recognize how critical [brief insight about the problem] is for achieving your objectives.\n\nBODY – Solution, Quantified Impact & Technical Readiness\nDuring my internship at [Previous Company], I achieved [specific, quantified result—e.g., “optimized X process to reduce turnaround time by Y%”], directly tackling a similar challenge. My academic work in [relevant subjects] and proficiency with [relevant tools or technologies] have prepared me to contribute immediately to [key role responsibilities].\n\nKey qualifications I bring:\n\nDeveloped and implemented [specific method or tool], resulting in [quantified outcome, e.g., “improved accuracy by X%”].\n\nConducted [type of study or project], identifying [insight or result] that led to [impact, e.g., “extended shelf life by X%”].\n\nCollaborated with [team or stakeholders] to [action], enhancing [process or outcome] by [metric].\n\nDemonstrated leadership through [activity or role], organizing [event or initiative] for [scope], showcasing planning and coordination skills.\n\nCLOSING – Value Proposition & Proactive CTA\nI’m excited to bring my proven track record in [key strength] and my data-driven problem-solving approach to help [Company Name] overcome [specific challenge]. I would welcome a brief call next week to discuss how my background in [relevant skill or domain] can support your team’s goals.\n\nBest regards,\n[Your Name]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "1621c7c6-4506-4165-b50d-12788f562e75",
+      "name": "Entry Cover Letter Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client Resume and Job Description to create executive level cover letter:\n {{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an expert executive level cover letter writer agent\n\n## Your Task\nWrite the Executive level cover letter for resume based on the example template\n\n## Rules\n- Don't be over explanatory\n- Cover letter must be 1 page longer after formatting the document\n- Skip the steps of example template which are not included in the person details\n- Follow the template structure\n- Use only given details\n- Don't write anything twice\n- Output cover letter only\n\n## Example Template\n\n[Your Name]\n[Email] | [Phone] | [LinkedIn Profile]\n[Date]\n\nDear [Board/Search Committee/CEO Name],\nRE: Application for the position of [Insert Role]\n\n[OPENING - Strategic Context]\n[Company Name]'s recent [strategic challenge/opportunity from investor reports/news] represents the type of complex organizational challenge I've successfully navigated throughout my [X]-year executive career. As [Current/Recent Title], I've led similar transformations that resulted in [high-level quantified impact].\n\n[BODY - Leadership Impact & Strategic Vision]\nMy experience driving [specific type of change] across [scope - geographic/functional] positions me uniquely to address [Company Name]'s current priorities:\n\n**Strategic Leadership:**\n• [Major organizational transformation with quantified results]\n• [Board-level strategic initiative with business impact]\n• [Industry leadership or thought leadership example]\n\n**Operational Excellence:**\n• [Large-scale operational improvement with metrics]\n• [Cost optimization or revenue enhancement achievement]\n• [Technology/process transformation with measurable outcomes]\n\nHaving reviewed [Company Name]'s [specific strategic document/initiative], I see significant opportunities to [specific strategic insight] while [addressing specific challenge]. My proven ability to [relevant executive capability] would be particularly valuable as you [specific company goal].\n\n[CLOSING - Executive Partnership]\nI would welcome the opportunity to discuss how my experience in [relevant expertise area] can help [Company Name] achieve its strategic objectives and deliver sustainable value to stakeholders.\n\nRespectfully,\n[Your Name]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        240
+      ],
+      "id": "336008a9-731e-42d6-b635-e61c6642af4d",
+      "name": "Executive Cover Letter Agent"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $('Mid Cover Letter Agent').item.json.output }}",
+        "name": "={{ $json.output['Client Name'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1Iz9YIhaIzTd4i04p_bAvXjG-PAElyreQ",
+          "mode": "list",
+          "cachedResultName": "Mid Level Cover Letter",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Iz9YIhaIzTd4i04p_bAvXjG-PAElyreQ"
+        },
+        "options": {
+          "convertToGoogleDocument": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1728,
+        -320
+      ],
+      "id": "ebc56047-9e0d-4d35-9d02-f2b2a44f0a05",
+      "name": "Mid Cover Letter",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $('Entry Cover Letter Agent').item.json.output }}",
+        "name": "={{ $json.output['Client Name'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1NVmxC8Lu9qJ0ELZVMI0y2rE-oPOe8oW-",
+          "mode": "list",
+          "cachedResultName": "Entry Level Cover Letter",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1NVmxC8Lu9qJ0ELZVMI0y2rE-oPOe8oW-"
+        },
+        "options": {
+          "convertToGoogleDocument": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        -96
+      ],
+      "id": "a578992a-f1aa-466f-b1fb-443258c8358e",
+      "name": "Entry Cover Letter",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $('Executive Cover Letter Agent').item.json.output }}",
+        "name": "={{ $json.output['Client Name'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "12W-LbiayHq2Z-NdSOSmXrt2r8qFCD5gF",
+          "mode": "list",
+          "cachedResultName": "Executive Level Cover Letter",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/12W-LbiayHq2Z-NdSOSmXrt2r8qFCD5gF"
+        },
+        "options": {
+          "convertToGoogleDocument": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        240
+      ],
+      "id": "23183481-6c82-4d2b-8919-cd814f5efc37",
+      "name": "Executive Cover Letter",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# AUTHORS  \n**Jaweria Mehboob / Shaurya Yaduvanshi** (AIFuelAutomate)\n[Linkedin](https://www.linkedin.com/in/shaurya-yaduvanshi-545547390?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app) - [X/Twitter](https://x.com/AIFuelAutomatee) - [Threads](https://www.threads.com/@aifuelautomate)",
+        "height": 144,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        0
+      ],
+      "id": "e18e0f2f-ee03-449f-98f4-edefd5bcef57",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Mid Cover Letter Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Entry Cover Letter Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Executive Cover Letter Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Mid Cover Letter Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Mid Cover Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Entry Cover Letter Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Entry Cover Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Executive Cover Letter Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor2": {
+      "main": [
+        [
+          {
+            "node": "Executive Cover Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mid Cover Letter Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entry Cover Letter Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executive Cover Letter Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4882ee93-406b-447e-9f14-aff9487f9970",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6efdad0e923fb7a3b97f17527c971cc702165e30d4be7d13ef7b750673127135"
+  },
+  "id": "vT2VeeP6rk8t3NS1",
+  "tags": [
+    {
+      "updatedAt": "2025-09-03T07:25:45.588Z",
+      "createdAt": "2025-09-03T07:24:25.071Z",
+      "id": "CMeZRLepqld8TOGW",
+      "name": "writing"
+    }
+  ]
+}

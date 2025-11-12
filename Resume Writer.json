@@ -1,0 +1,805 @@
+{
+  "name": "Resume Writer",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1Mw_f28f7A0n-YIEdnSnPEA3oT9g--2KP",
+          "mode": "list",
+          "cachedResultName": "Resume Requests",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Mw_f28f7A0n-YIEdnSnPEA3oT9g--2KP"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "27e558f6-0664-436f-9548-cad2a734f449",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d93cfd0e-a72c-4d73-a60a-5dd8cfdf12df",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "8d9b3719-1d2c-4e76-8b44-090665e57aca",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Chronological Resume",
+              "description": "\"Mid level\", \"Mid-level\""
+            },
+            {
+              "category": "Functional Resume",
+              "description": "Entry level"
+            },
+            {
+              "category": "Combination/Hybrid Resume",
+              "description": "Executive level"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        -16
+      ],
+      "id": "700301a0-1c87-42e5-94dd-b0d3afc088e6",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        208
+      ],
+      "id": "43ee33fb-c7e0-41c2-816b-f842dad6f6bc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        -464
+      ],
+      "id": "57ea8374-79ed-4c1b-90df-df717aabdb06",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Client Name",
+              "description": "the name of client",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1728,
+        -320
+      ],
+      "id": "0b6c9336-fe0a-4dac-bd71-42f16527e472",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1728,
+        -464
+      ],
+      "id": "569fffa6-34a6-4c76-b861-6353b89f22c5",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        80
+      ],
+      "id": "382f5b47-93d0-47ad-a99d-b779df6148c1",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Client Name",
+              "description": "the name of client",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        -96
+      ],
+      "id": "15d3d998-8d0f-40ed-ac3b-e7bdc018a23b",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        80
+      ],
+      "id": "ae48884d-49b4-4c73-afaa-569433ec0828",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        416
+      ],
+      "id": "f2726851-bcf8-450f-9171-2645e9fd14b4",
+      "name": "OpenAI Chat Model5",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Client Name",
+              "description": "the name of client",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        240
+      ],
+      "id": "92193a39-7b81-4a7b-a050-40dd4ef8f661",
+      "name": "Information Extractor2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        416
+      ],
+      "id": "7d1d3ced-19cd-43c9-acb8-c156bda3e1f8",
+      "name": "OpenAI Chat Model6",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $('Proofread & Edit Agent').item.json.output }}",
+        "name": "={{ $json.output['Client Name'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1XRoTdJbLNs-LiIbUxOOvjaVJeo2miowK",
+          "mode": "list",
+          "cachedResultName": "Chronological Resumes",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1XRoTdJbLNs-LiIbUxOOvjaVJeo2miowK"
+        },
+        "options": {
+          "convertToGoogleDocument": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2064,
+        -320
+      ],
+      "id": "798ee8bb-e6f6-4dce-994a-1b43c8d778a0",
+      "name": "Chronological Resumes",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $('Functional Resume Agent').item.json.output }}",
+        "name": "={{ $json.output['Client Name'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1SIlUnUl71uMCNpNjjcjBAsjFtiRQhofX",
+          "mode": "list",
+          "cachedResultName": "Functional Resumes",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1SIlUnUl71uMCNpNjjcjBAsjFtiRQhofX"
+        },
+        "options": {
+          "convertToGoogleDocument": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        -96
+      ],
+      "id": "33be1588-c1ca-4884-96e9-0f3acf439778",
+      "name": "Functional Resumes",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $('Combination/Hybrid Resume Agent').item.json.output }}",
+        "name": "={{ $json.output['Client Name'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1H0DICxXOs18JcTDga9enezcvnJA9XwKz",
+          "mode": "list",
+          "cachedResultName": "Combination/Hybrid Resumes",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1H0DICxXOs18JcTDga9enezcvnJA9XwKz"
+        },
+        "options": {
+          "convertToGoogleDocument": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        240
+      ],
+      "id": "3be5ca15-bee8-4076-b87d-cdf0ee8297d8",
+      "name": "Combination/Hybrid Resumes",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0jOEtWvSBf6aDIV4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client Inforamtion to create combination/hybrid resume:\n {{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an expert combination/hybrid resume writer agent\n\n## Your Task\nWrite the combination/hybrid resume that include sections:\n**Heading about the main & bigger role(choose after analyzing all the given text**\n- Show some explanation and then show the key skills related to this achievement\n**Professional Experience**\n- Job title, role and some details with bullet points\n**Education and Credentials**\n- List the education, certifications, and skills\n\n## Rules\n- Only include the headings I mention above\n- Don't repeat anything twice\n- I only want the resume output, not unnecessary text\n\n## Example Output\nJoe Applicant\n\n123 Main Street  •  Oakland, CA 12345  •  (123) 456-7890  •  joe.applicant@email.com\n\nEDUCATION COORDINATOR/SUPERVISOR\n\nEffectively managing staffs in both the blood bank and business arenas\n\nResults-oriented, high-energy, hands-on professional with 10+ years’ experience and a successful record of accomplishments in the blood banking, training, and communication transmission industries. \n\nKey skills include:\n• Experience in Quality Assurance and Customer Service in Two Industries.\n• Excellent Communication Skills\n• Team Building & Leadership\n• Internal & External Communications\n• Experience in Training and Payroll\n\nPROFESSIONAL EXPERIENCE\n\nAMERICAN RED CROSS, Oakland, Calif.\nEDUCATION MANAGER / EDUCATION COORDINATOR (February 2013 – Present)\nFacilitated successful educational project over the past five years for Northern California blood centers, with FDA regulated manufacturing equipment, as pertaining to CGMP, CFRs, Calif. State and American Association of Blood Bank (AABB) regulations.\n\nNotable accomplishments:\n• Provide daily operational review/quality control of educational accountability to meet regulations.\n• Responsible for assuring uncompromised compliance with 23 organizational quality systems.\n\nCORE COMMUNICATION INC., Sunnyvale, Calif.\nCABLE TELEVISION SUPERVISOR (May 2008 – February 2013)\nSupervised contract support for six AT&T Broadband systems located in the Bay Area. \n\nNotable Accomplishments:\n• Provided customer support/resolution, training in telephony and customer care.\n• Handled quality control, payroll, special projects/plant extensions, and staff evaluations.\n\nEDUCATION & CREDENTIALS\n\nSAN JOSE STATE UNIVERSITY, San Jose, Calif. \nBachelor of Science (GPA; 3.8; Major: Administration of Justice; Graduated Cum Laude), May 2008\n\nCertifications\n\nNCCT Phlebotomy Technician Certification  •  NCCT Certified  •  CATV System Technician\n\nInformation Technology Skills\n\nMicrosoft Office Suite  •  ADP / Workforce Now  •  Proficient in Various Payroll Software Systems\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        240
+      ],
+      "id": "4cc6d8fe-2cc7-457e-840f-8985518494ad",
+      "name": "Combination/Hybrid Resume Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client Inforamtion to create functional resume:\n {{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an expert functional resume writer agent\n\n## Your Task\nWrite the Functional resume that include sections:\n\n**Contact Information**\n- Name\n- Address\n- Phone number\n- Professional Email\n- Linkedin profile\n\n**Professional Summary**\n- The summary is skills-based, highlighting relevant coursework and transferable skills, such as problem-solving and collaboration, which are highly valued in entry-level hires.\n- Also include keywords from job description in the summary.\n\n**Projects**\n- This section provides tangible evidence of skill application. \n- It uses strong action verbs and quantifies the impact of a project, a crucial practice for candidates with limited formal work experience.\n\n**Education**\n- Education is listed in a clear, standard format. \n- Relevant coursework is included to show foundational knowledge that directly applies to the target role.\n\n**Skills and Certifications**\n- The skills section is robust for an entry-level resume. \n- It combines hard and soft skills and strategically includes a micro-credential to demonstrate practical, up-to-date knowledge beyond a traditional degree.\n\n## Rules\n- Don't add any experience or information from yourself, make this resume totally from details you get.\n- Only include the headings I mention above\n- Don't repeat anything twice\n- I only want the resume output, not unnecessary text\n\n## Example Output\nAlex Chen\n\n(555) 555-5555 | alex.chen@email.com | New York, NY |\n<https://www.linkedin.com/in/alexchen>\n\nProfessional Summary\n\nMotivated and detail-oriented recent graduate with a Bachelor of Science in Electrical Engineering. Proficient in circuit design and embedded systems through comprehensive coursework and hands-on projects. Seeking an entry-level position to apply strong problem-solving and collaboration skills to innovative engineering solutions.\n\nProjects\n\nSenior Capstone Project: Automated Home Energy System\n\n• Developed a smart energy management system using Python, C++, and microcontrollers to optimize household energy consumption by 10%.\n\n• Managed a cross-functional team of 4 peers, coordinating tasks and timelines to deliver the project on schedule.\n\nEducation\n\nNew York University | New York, NY | May 2025\n• Bachelor of Science in Electrical Engineering\n• Relevant Coursework: Signal Processing, Digital Systems Design, Microcontrollers\n\nSkills and Certifications\n\nHard Skills: Circuit Design, Embedded Systems, MATLAB, C++,\nPython, AutoCAD.\n\nCertifications: Google IT Support Professional Certificate.\n\nSoft Skills: Problem-Solving, Teamwork, Critical Thinking,\nAdaptability."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "5752489e-c7ad-4fa4-84d6-285043bfe1da",
+      "name": "Functional Resume Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client Inforamtion to create chronological resume:\n {{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an expert chronological resume writer agent\n\n## Your Task\nWrite the Chronological resume that include sections:\n\n**Contact Information**\n- Name\n- Address\n- Phone number\n- Professional Email\n- Linkedin profile\n- Portfolio link\n\n- The contact information is professional and includes a link to a GitHub portfolio, a critical piece of external proof for a mid-career tech professional.\n\n**Professional Summary**\n- The summary is concise, tailored to the role, and incorporates key terms. Use an action-oriented tone to set the stage for the rest of the document.\n- Also include keywords from job description in the summary.\n\n**Work Experience**\n-  Each bullet point begins with a strong action verb and includes quantifiable metrics to show impact and value. \n- The focus is on achievements and strategic outcomes, not just daily duties.\n\n**Skills**\n- The skills section is clearly separated into hard and soft skills. \n- It includes a comprehensive list of technical proficiencies and essential soft skills that are a baseline expectation for 2025 roles.\n\n**Education**\n- Education is listed in a clear, standard format \n\n**Certifications**\n- List the certifications related to the job\n\n## Rules\n- Don't add any experience or misinformation from yourself, make this resume totally from details you get.\n- Only include the headings I mention above\n- Don't repeat anything twice\n- I only want the resume output, not unnecessary text\n\n## Example Output\nJane Doe\n\n(555) 555-5555 | jane.doe@email.com | San Francisco, CA |\n<https://www.linkedin.com/in/janedoe> | <https://github.com/janedoe>\n\nProfessional Summary\n\nResults-driven Senior Data Analyst with 8+ years of experience\nleveraging predictive analytics and machine learning to drive business\ngrowth. Proven track record of increasing operational efficiency and\ninforming strategic decision-making. Proficient in Python, SQL, and\nTableau. Seeking to apply analytical expertise to complex challenges\nin a fast-paced technology environment.\n\nWork Experience\n\nSenior Data Analyst, TechCorp Innovations | San Francisco, CA | January 2022 – Present\n\n• Led a team of 3 analysts to build and implement a new predictive model, resulting in a 15% reduction in customer churn and a $5M increase in annual revenue.\n\n• Optimized data collection pipelines, reducing processing time by 40% and improving reporting accuracy.\n\n• Developed a custom dashboard in Tableau, providing real-time insights to senior leadership that informed a new product launch strategy.\n\nSkills\n\nHard Skills: Python (NumPy, Pandas, Scikit-learn), SQL, Tableau,\nPower BI, AWS, Microsoft Azure, Statistical Analysis, Predictive\nModeling, Machine Learning.\n\nSoft Skills: Problem-Solving, Critical Thinking, Team Leadership,\nAdaptability, Stakeholder Communication.\n\nEducation\n\nBachelor of Science in Statistics\nUniversity of California, Berkeley | Berkeley, CA | Graduated May 2015\n\nMinor in Computer Science\n\nDean’s List, Spring 2014 & Fall 2014\n\nCertifications\n\nCertified Analytics Professional (CAP), INFORMS | Issued June 2023\n\nAWS Certified Data Analytics – Specialty | Issued November 2022\n\nTableau Desktop Certified Professional | Issued March 2021\n\nMicrosoft Certified: Azure Data Scientist Associate | Issued August 2020"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -320
+      ],
+      "id": "a854e4e9-930f-4cdb-b913-4011ffff47c4",
+      "name": "Chronological Resume Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Proofread and Refine this Chronological Resume: {{ $json.output }}\n\nMatch the resume with this information:\n{{ $('Text Classifier').item.json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are a proofread and refine agent for resume\n\n## Your Task\n- Make sure the keywords from job description are included in professional summary\n- Don't include the job description things in resume that are not included in person details\n- Match the chronological resume with the information about person and job description, \n- If any misinformation is included in the resume which is not included in the person details, remove it and correct\n- Correct the grammar issues\n\n## Rules:\n- I only want the resume output, not unnecessary text"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        -320
+      ],
+      "id": "d6830f47-8950-4b35-83fb-66ab3c7a3da4",
+      "name": "Proofread & Edit Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        -464
+      ],
+      "id": "1d92f493-4bf0-4380-9c08-8852d7595726",
+      "name": "OpenAI Chat Model7",
+      "credentials": {
+        "openAiApi": {
+          "id": "OOVVoh9yRHzeBxAh",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# AUTHORS  \n**Jaweria Mehboob / Shaurya Yaduvanshi** (AIFuelAutomate)\n[Linkedin](https://www.linkedin.com/in/shaurya-yaduvanshi-545547390?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app) - [X/Twitter](https://x.com/AIFuelAutomatee) - [Threads](https://www.threads.com/@aifuelautomate)",
+        "height": 144,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        0
+      ],
+      "id": "c27394d9-02ad-4761-9f07-ab7457577719",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Chronological Resume Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Functional Resume Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Combination/Hybrid Resume Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Chronological Resume Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Chronological Resumes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Functional Resume Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Functional Resumes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Combination/Hybrid Resume Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor2": {
+      "main": [
+        [
+          {
+            "node": "Combination/Hybrid Resumes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combination/Hybrid Resume Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Functional Resume Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chronological Resume Agent": {
+      "main": [
+        [
+          {
+            "node": "Proofread & Edit Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proofread & Edit Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Proofread & Edit Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4e868bb4-7c76-4aec-8d88-87542758b9d1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6efdad0e923fb7a3b97f17527c971cc702165e30d4be7d13ef7b750673127135"
+  },
+  "id": "VrNxxOvEaUbY0bOz",
+  "tags": [
+    {
+      "updatedAt": "2025-09-03T07:25:45.588Z",
+      "createdAt": "2025-09-03T07:24:25.071Z",
+      "id": "CMeZRLepqld8TOGW",
+      "name": "writing"
+    }
+  ]
+}

@@ -1,0 +1,716 @@
+{
+  "name": "Threads Auto Reply",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */6 * * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2448,
+        128
+      ],
+      "id": "42650c66-87d7-4a4e-9111-c9233403db14",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,permalink,media_type"
+            },
+            {
+              "name": "limit",
+              "value": "20"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2224,
+        128
+      ],
+      "id": "67aebe69-f53a-4ab0-a5f7-faf7ad833b86",
+      "name": "Get Recent Post IDs",
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.threads.net/v1.0/{{ $json.id }}/replies",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,username,text,created_time,replied_to,root_post"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1552,
+        32
+      ],
+      "id": "f1353d00-c446-4f85-a08e-4d2ad29a3aed",
+      "name": "Get Replies",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.threads.net/v1.0/{{ $json.id }}/replies",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "username,text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -880,
+        -64
+      ],
+      "id": "91fd013c-21b5-4eba-aac3-d04aff8613dc",
+      "name": "Get Sub Replies",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        128
+      ],
+      "id": "7baed760-5559-4b9e-9a60-e786da52bf94",
+      "name": "Split Out Posts"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        32
+      ],
+      "id": "34c29b34-fbe1-4bb0-bd15-1be5509af59d",
+      "name": "Split Out Replies"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "23cc20f5-cf42-4b38-b5c2-938c188ade83",
+              "leftValue": "={{$json.media_type}}",
+              "rightValue": "TEXT_POST",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1776,
+        128
+      ],
+      "id": "0d2f0c11-91f5-4a8b-967b-72ca01a4fb98",
+      "name": "Text Posts"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "65bef821-f619-4fd9-bebf-e6c386f1b872",
+              "leftValue": "={{ $json.username }}",
+              "rightValue": "aifuelautomate",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1104,
+        32
+      ],
+      "id": "d97d010b-4b8c-409e-8ee2-5cf8fd1784ad",
+      "name": "Others Replies"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9c1aff0d-77d4-4b90-b045-07f401291e15",
+              "name": "id",
+              "value": "={{ $('Others Replies').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "17daaebb-e5d6-4b5c-b944-2730c6714fb0",
+              "name": "text",
+              "value": "={{ $('Others Replies').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "3efbf949-8226-4ba8-a29e-262e0d0056ee",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -656,
+        -64
+      ],
+      "id": "03c9c171-7d9b-4a2c-ad20-d128e4578e7c",
+      "name": "Add id & text"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        224
+      ],
+      "id": "01f9dd34-52d1-4cb9-b883-3a4e805ff7db",
+      "name": "Stop - Irrelevant Posts"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        128
+      ],
+      "id": "c375eb29-033a-4e80-9c80-7d7c2f8c22ac",
+      "name": "Stop - My Replies"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        80
+      ],
+      "id": "af221db4-6545-40b4-8ca9-bbac02f09e3d",
+      "name": "Stop - Already Replied"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dbbd5d03-2d76-45b7-942f-46864d77e07a",
+              "leftValue": "={{ $json.data.parseJson().filter(replies => replies.username === \"aifuelautomate\").length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -432,
+        -64
+      ],
+      "id": "bd4e6bb3-8401-471f-adac-d8061f23abe7",
+      "name": "Not Replied"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Give short additional value reply ({{ $json.text }})",
+        "options": {
+          "systemMessage": "# Overview\nYou are a successful automation expert who helps entrepreneurs save 10+ hours weekly with N8N automations. You reply to comments on your threads posts naturally and helpfully.\n\n## Your Profile\n- **Bio:** Turning complex tasks into 1-click N8N automations saving 10+ hours/week 🤖 Real builds • Weekly AI automation breakdowns for busy entrepreneurs⚡️\n- **Expertise:** N8N automation, AI automation, AI agents, automation workflows\n- **Voice:** Friendly automation expert who builds real solutions\n\n## Content You Share About\n- **N8N Automation** (primary focus)\n- **AI automation and teaching** \n- **AI tools, updates, and use cases** (less focus)\n- **My threads growth**\n- **AI and AI agents**\n\n## Reply Guidelines\n\n### Writing Style\n- Use 5th grade English level\n- Keep replies short (1-3 sentences max)\n- Add line breaks for readability where suitable\n- Sound like a real human, not AI\n\n### Language Rules\n**NEVER use:**\n- Em dashes(—, _) in text\n- Filler words: however, moreover, furthermore, therefore\n- AI-sounding words: absolutely, exactly, precisely, certainly\n- Passive voice\n- Overly formal language\n\n**DO use when natural:**\n- Casual expressions: ugh, yep, tbh, gosh, dang, fr, whew, umm, ohhh, woohoo, damn, haha, lol, gotcha, bingo\n- Limit to ONE casual expression per reply\n- Use emojis where they add meaning\n- Maximum ONE or TWO emoji per reply\n- Only use when it feels natural\n\n### Content Approach\n- Give practical automation advice\n- Share real experiences with N8N\n- Mention specific time savings when relevant\n- Keep focus on helping entrepreneurs automate tasks\n- **Question Rule:** Don't ask questions in every reply. Only ask 1 or 2/10 when it feels natural and adds value\n\n\n## Example Responses\n\n**Comment:** \"Systems will set you free!\"\n**Reply:** \"Fr systems turn stress into calm\"\n\n**Comment:** \"What's your approach when building one\"\n**Reply:** \"Here’s how I do it:\n\n1- Find what feels heavy or solves real problem\n2- Break it into the smallest steps possible\n3- Then I make rough workflow in Excalidraw to be clear about every node\n4- Then I build a workflow in n8n that handles those steps automatically\n5- I test every step before finishing\n\"\n\n**Comment:** \"How do you even start with automation?\"\n**Reply:** \"Start with one annoying task you do daily. \n\nI always tell people - pick something that takes 15 minutes and drives you nuts. That's your first automation win!\"\n\n**Comment:** \"N8N seems complicated\"\n**Reply:** \"Tbh it looks scary at first but it's like legos for adults.\n\n**Comment:** \"Does this really save 10 hours?\"\n**Reply:** \"Oh yeah, sometimes more! \n\nWhat's eating up your time right now?\"\n\n**Comment:** \"Automation is the new way of simplify life.\"\n**Reply:** \"Right, it’s about working smarter so we can focus on things that need our human touch\"\n\n## Response Strategy\n1. Acknowledge their comment\n2. Give helpful, specific advice\n3. Keep it conversational and valuable"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -208,
+        -320
+      ],
+      "id": "bf9f2ee8-65ca-4978-9fb5-9f16fb17eb4f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        -96
+      ],
+      "id": "99c75958-3706-4fcb-9170-9842d30b8554",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "kA69KOcgQvQMTei1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "reply_to_id",
+              "value": "={{ $('Not Replied').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        -208
+      ],
+      "id": "7e24cb08-f7a2-472f-9d50-065b606865e5",
+      "name": "Threads | Create Reply1",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        -208
+      ],
+      "id": "dd91a9e2-861b-41b6-9874-cc5e741231f3",
+      "name": "Threads | Publish Reply1",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        656,
+        -208
+      ],
+      "id": "6d294026-e5e5-43a6-8b5b-91323499c4ce",
+      "name": "End"
+    },
+    {
+      "parameters": {
+        "content": "# Threads Auto Reply",
+        "height": 896,
+        "width": 3504,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2576,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "2f65e050-1a0a-472d-a7e5-8a5de079d963",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appyyNyJGdxppTbot",
+          "mode": "list",
+          "cachedResultName": "Untitled Base",
+          "cachedResultUrl": "https://airtable.com/appyyNyJGdxppTbot"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblr4CxYGbjnXZi8l",
+          "mode": "list",
+          "cachedResultName": "Compliment",
+          "cachedResultUrl": "https://airtable.com/appyyNyJGdxppTbot/tblr4CxYGbjnXZi8l"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "Ammar",
+            "Feedback": "I hate this product."
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1024,
+        -560
+      ],
+      "id": "fe714f76-1b9d-4e57-bd0f-426b407ab97b",
+      "name": "Create a record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "GpT0TQt2yCqozi9W",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Recent Post IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Post IDs": {
+      "main": [
+        [
+          {
+            "node": "Split Out Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Replies": {
+      "main": [
+        [
+          {
+            "node": "Split Out Replies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Sub Replies": {
+      "main": [
+        [
+          {
+            "node": "Add id & text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Posts": {
+      "main": [
+        [
+          {
+            "node": "Text Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Replies": {
+      "main": [
+        [
+          {
+            "node": "Others Replies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Posts": {
+      "main": [
+        [
+          {
+            "node": "Get Replies",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop - Irrelevant Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Others Replies": {
+      "main": [
+        [
+          {
+            "node": "Get Sub Replies",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop - My Replies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add id & text": {
+      "main": [
+        [
+          {
+            "node": "Not Replied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Not Replied": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop - Already Replied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Threads | Create Reply1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Create Reply1": {
+      "main": [
+        [
+          {
+            "node": "Threads | Publish Reply1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Publish Reply1": {
+      "main": [
+        [
+          {
+            "node": "End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3a3feb42-4412-4fbe-a0be-d0506ed921fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ba5dab70f0a0b098b9aea08e4d4567ac7b7a19f279fa48c41316a5d09d75d1dd"
+  },
+  "id": "rKXrfUoGQpkmxc2m",
+  "tags": []
+}

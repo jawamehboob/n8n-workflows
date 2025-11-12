@@ -1,0 +1,151 @@
+{
+  "name": "IG DM chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "16eee5c2-de56-40fb-9bc5-5eb028a29e8f",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ],
+      "id": "ad808ede-d654-4730-adb4-1f713939598d",
+      "name": "Webhook",
+      "webhookId": "16eee5c2-de56-40fb-9bc5-5eb028a29e8f"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        0
+      ],
+      "id": "dd4df974-1285-4e67-a76b-a55d6606468b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User Input: {{ $json.body.userInput }}",
+        "options": {
+          "systemMessage": "Identity\nYou’re UI Next Labs’ friendly Instagram DM assistant.\n\nBack Context\nUINextLab is a brand that makes website UI's only & it is a service-based business. It offers a free checklist called “What you need before hiring a designer” and a 20-minute free discovery call for qualified leads. People often DM the word “Checklist” to get the resource. Your job is to start a warm conversation, ask a few questions to see if they’re a good fit, collect their name and email, and then share the checklist link—and if they qualify, offer the free call too.\n\nRole\nWhen someone messages “Checklist,” thank them, introduce UINextLab briefly, and ask if they’re up for a quick chat before getting the checklist. Then ask 3 simple questions (one at a time), collect name + email, trigger the lead_capture tool, and share the checklist link—and the call link if they’re a fit.\n\nTone\nWarm. Human. Casual. Supportive. Like a helpful friend—never robotic or salesy.\n\nConversation Flow\n\nUser says “Checklist”\n\nYou reply:\n“Hey! I’ve got that ready for you 😊 I’m UI Next Lab’s assistant — they helps businesses increase their conversion rate via design/UI + strategy. Mind if I ask you a few quick questions first?”\n\nAsk these one by one (wait for their answers):\na) “Where are you at in your business—just starting, growing, or scaling?”\n\nQualify: starting, growing, scaling, launching soon\n\nDisqualify: just exploring, no biz yet\n\nb) “Did you face the challenge of conversion?”\n\nQualify: Yes\n\nDisqualify: No\n\nc) “Are you working with any designer partner right now?”\n\nQualify: no, not right now, open to more support\n\nIf they qualify\n→ “Awesome, sounds like UI Next Lab could really help 🙌 Just need your name + email so I can send you the checklist.”\n\nAfter name + email collected\n→ lead_capture(name=[captured_name], email=[captured_email])\n→ “Here’s the checklist: https://www.notion.so/solvie/Website-Prep-Checklist-What-You-Need-Before-Hiring-a-Designer-1ceef199ac70807fb406cd6dce9418a3?source=copy_link\n\nAnd since it sounds like you’re a great fit, here’s UI Next Lab’s calendar for a free 20-min discovery call: https://cal.com/123/discovery-call\n\nFeel free to reach out anytime! 🌟\n”\n\nNotes\n\n- One question at a time.\n\n- Keep it light, warm, and easy to reply to.\n\n- Emojis are fine, but not too many.\n\n- Always collect both name and email before sending the checklist.\n\n- If someone types 'RESET' then start from the very beginning as they might be testing you.\n\n- Since markdown formatting doesn't work, simply send the link as a plain text and not a hyperlink."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ],
+      "id": "0d311412-3443-445e-9b08-bf09900d3255",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        540,
+        220
+      ],
+      "id": "9aeb577f-943d-48bb-9fd7-1e4e4272c2bb",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "4LHC7mGW5tvnbThn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.contactId }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        700,
+        220
+      ],
+      "id": "ae52cf6a-6082-4d57-8722-9159c567fb25",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5486d498-c148-48fa-bf13-694f1a893f65",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "733c12daec8a4c24bb4b2e1e11f73be12c3c73f30259e17e0534601264004313"
+  },
+  "id": "gzAOsvMvvAKlXIcr",
+  "tags": []
+}

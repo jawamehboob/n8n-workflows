@@ -1,0 +1,1455 @@
+{
+  "name": "Threads Auto-posting",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "221ef199-ac70-8021-80cc-d8ee38422a78",
+          "mode": "list",
+          "cachedResultName": "Long-form",
+          "cachedResultUrl": "https://www.notion.so/221ef199ac70802180ccd8ee38422a78"
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Posted?|checkbox",
+              "condition": "equals"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "timestamp": true,
+                "key": "created_time",
+                "direction": "ascending"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -3640,
+        1320
+      ],
+      "id": "751f6d43-2faa-4a60-9268-963f8ab30db9",
+      "name": "Long-form",
+      "credentials": {
+        "notionApi": {
+          "id": "puFAWdex3H31Xv85",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "222ef199-ac70-804b-8e2d-f06b4974d492",
+          "mode": "list",
+          "cachedResultName": "Short-form",
+          "cachedResultUrl": "https://www.notion.so/222ef199ac70804b8e2df06b4974d492"
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Posted?|checkbox",
+              "condition": "equals"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "timestamp": true,
+                "key": "created_time",
+                "direction": "ascending"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -3660,
+        1740
+      ],
+      "id": "40cd5cf9-efab-41b7-b4e8-7cf159db92a3",
+      "name": "Short-form",
+      "credentials": {
+        "notionApi": {
+          "id": "puFAWdex3H31Xv85",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.threads.net/refresh_access_token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "th_refresh_token"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2760,
+        1320
+      ],
+      "id": "4a947123-4679-4485-a78c-4a9cdef59e92",
+      "name": "Threads | Refresh Token",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Long-form').item.json.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2540,
+        1320
+      ],
+      "id": "471104f2-5099-4a44-bb38-d5ace4ffe7ab",
+      "name": "Threads | Create Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "operation": "getAll",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "limit": 100
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -3420,
+        1320
+      ],
+      "id": "acdadc29-b37a-4db7-bf4e-1af6db354c41",
+      "name": "Get All Blocks",
+      "credentials": {
+        "notionApi": {
+          "id": "puFAWdex3H31Xv85",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "blocks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -3200,
+        1320
+      ],
+      "id": "3cd224b8-c6c7-4ca2-bf83-45ceafa9d1d8",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f51d616-5654-4c2f-a9ed-240e3099f14d",
+              "name": "posts",
+              "value": "={{ $('Create Replies List').item.json.posts }}",
+              "type": "array"
+            },
+            {
+              "id": "c35af718-ffad-4cb8-b7e6-59bd1f2f49c0",
+              "name": "postId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2100,
+        1320
+      ],
+      "id": "1c46ce5e-db70-4e71-87fd-e84d243ad4ec",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2320,
+        1320
+      ],
+      "id": "15091d06-5493-4e2c-a526-270b9001273d",
+      "name": "Threads | Publish Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eade1164-fe12-4737-9ce4-555c7eeab441",
+              "leftValue": "={{ $json.posts.length }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1880,
+        1320
+      ],
+      "id": "2a97e042-fb69-4d31-a7f0-fdb2583b1110",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.posts[0] }}"
+            },
+            {
+              "name": "reply_to_id",
+              "value": "={{ $json.postId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1660,
+        1320
+      ],
+      "id": "23685255-7c67-403f-93c8-cdfaf51faddc",
+      "name": "Threads | Create Reply",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1440,
+        1320
+      ],
+      "id": "9194d692-8b26-4485-b8f6-3423f8dbc284",
+      "name": "Threads | Publish Reply",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = ['']\n\nfor (const item of $input.first().json.blocks) {\n  const content = item.content\n  if (typeof content !== \"string\") continue\n  if (Number.isInteger(+content[0]) || content.startsWith(\"TD;LR\")) {\n    posts.push(content)\n    continue\n  }\n\n  if (content.startsWith('CTA')) {\n    posts.push(\"\")\n    continue\n  }\n  \n  const lastIdx = posts.length - 1\n  posts[lastIdx] = posts[lastIdx] + `\\n${content}`\n}\n\nreturn { posts: posts.filter(Boolean) };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2980,
+        1320
+      ],
+      "id": "2bdcc6c8-ad92-455d-a3b8-6908c41628b3",
+      "name": "Create Replies List"
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $('If').first().json.posts.slice(1)\n\nreturn { posts, postId:$input.first().json.id };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1220,
+        1395
+      ],
+      "id": "695e0ded-cfdf-4dad-9221-e04beb463b5a",
+      "name": "Create Reply Data"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Long-form').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Posted?|checkbox",
+              "checkboxValue": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -1660,
+        1120
+      ],
+      "id": "8ab17ebd-eac5-42a7-a652-b8341a7d1b64",
+      "name": "Mark as Posted",
+      "credentials": {
+        "notionApi": {
+          "id": "puFAWdex3H31Xv85",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Short-form').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Posted?|checkbox",
+              "checkboxValue": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -2780,
+        1740
+      ],
+      "id": "60a282f8-08c6-4d15-8a17-0f1104d14866",
+      "name": "Mark Short as Posted",
+      "credentials": {
+        "notionApi": {
+          "id": "puFAWdex3H31Xv85",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3000,
+        1740
+      ],
+      "id": "9f75b8c1-3bc8-423e-81e9-8621632eb90c",
+      "name": "Threads | Publish Short Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Short-form').item.json.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3220,
+        1740
+      ],
+      "id": "b4d1e8be-23e6-4690-8881-1d27d4f98b05",
+      "name": "Threads | Create Short Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.threads.net/refresh_access_token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "th_refresh_token"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3440,
+        1740
+      ],
+      "id": "dad3538d-63d7-493e-a966-250c895b90c7",
+      "name": "Threads | Refresh Token Short",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "lpTAOmnXYrQf2HqA",
+          "name": "Threads | Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 0 5 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -2120
+      ],
+      "id": "fad72530-e262-419c-baa1-e52d00bb45a5",
+      "name": "5:00 AM | Mon | Short-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 0 6 * * 2,4,6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -1580
+      ],
+      "id": "b506909d-deee-49b9-beed-e6ea1461fb1a",
+      "name": "6:00 AM | Tues, Thrus, Sat | Short-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 0 7 * * 0,3,5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -940
+      ],
+      "id": "5026a8a3-e0ab-4050-983b-9f406f9110e4",
+      "name": "7:00 AM | Sun, Wed, Fri | Short-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 15 * * 0,1,2,4,5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -280
+      ],
+      "id": "a738e13c-5fdf-48d9-b7aa-a5136d65413c",
+      "name": "3:30 PM | Sun, Mon, Tues, Thrus, Fri | Short-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 16 * * 3,6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        420
+      ],
+      "id": "3544f4a2-b418-4cae-af8c-993bd86b7ade",
+      "name": "4:00 PM | Wed, Sat | Short-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 18 * * 1,3"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -1860
+      ],
+      "id": "48d6ac0a-952c-4ddb-950a-c9e7caac1517",
+      "name": "6:00PM | Mon, Wed | Short-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 18 * * 0,4"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -1280
+      ],
+      "id": "408c8348-da27-4c1a-bf99-fb6ce2aefc1c",
+      "name": "6:30PM | Sun, Thrus | Short-form Schedule1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 20 * * 6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        80
+      ],
+      "id": "f737eabc-ea80-4529-9825-6d7fb1d0eb18",
+      "name": "8:00PM | Sat | Short-form Schedule1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 19 * * 2,5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -600
+      ],
+      "id": "0f9ee071-bcc1-4ea6-8706-135b53ece879",
+      "name": "7:00PM | Tues, Fri | Short-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 30 5 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        -2100
+      ],
+      "id": "603a8bbf-f8e3-4da7-b7eb-fed0d931f37a",
+      "name": "5:30 AM | Mon | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 30 6 * * 2,4,6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        -1860
+      ],
+      "id": "4244b946-466b-449e-903f-132304e79a8a",
+      "name": "6:30 AM | Tues, Thru, Sat | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 30 7 * * 0,3,5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        -1280
+      ],
+      "id": "764de3b8-f19e-4f5b-8ac7-726067b598cf",
+      "name": "7:30 AM | Sun, Wed, Fri | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 16 * * 0,1,2,4,5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        -580
+      ],
+      "id": "eda79b57-4e5f-4df8-b24f-d110829f910d",
+      "name": "4:00 PM | Sun, Mon, Tues, Thru, Fri | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 16 * * 3,6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        420
+      ],
+      "id": "638ace72-74c7-4158-b868-4d6de112936f",
+      "name": "4:30 PM | Wed, Sat | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 19 * * 0,4"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        -940
+      ],
+      "id": "4ef59367-b620-4128-b012-c17f4a804a4a",
+      "name": "7:00 PM | Sun, Thru | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 18 * * 1,3"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        -1580
+      ],
+      "id": "c9f6ab4f-5133-4c24-af5b-b9537cf69450",
+      "name": "6:30 PM | Mon, Wed | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 19 * * 2,5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        -280
+      ],
+      "id": "1523bf64-af5d-4075-a878-f57e859a92c7",
+      "name": "7:30 PM | Tues, Fri | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 20 * * 6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3400,
+        80
+      ],
+      "id": "7a5a626f-43a1-4d74-b8f4-37d094af2f3b",
+      "name": "8:30 PM | Sat | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 30 10 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3860,
+        1195
+      ],
+      "id": "d9cfba50-605a-4638-a32a-d3f8c0c662d4",
+      "name": "10:30 AM | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 19 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3860,
+        1395
+      ],
+      "id": "57478914-2c66-4052-8d7e-45628da43e43",
+      "name": "7:00 PM | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 15 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3880,
+        1840
+      ],
+      "id": "85a5895a-b560-4a77-961f-4b24ee30d2fa",
+      "name": "3:30 PM | Short-form Schedule"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "238ef199-ac70-8088-a10b-dd8d8eb64733",
+          "mode": "list",
+          "cachedResultName": "Threads Target Accounts",
+          "cachedResultUrl": "https://www.notion.so/238ef199ac708088a10bdd8d8eb64733"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -3760,
+        2260
+      ],
+      "id": "5f54b324-d117-4542-a6d0-ffa914ce5040",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "puFAWdex3H31Xv85",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.threads.net/refresh_access_token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,text,timestamp,username,permalink_url,is_reply"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "since",
+              "value": "={{$now.minus({hours: 8}).toISO()}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer "
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3540,
+        2260
+      ],
+      "id": "587349f6-21d1-4295-a0e0-dbb004fed381",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "nANrnwlio6kCwoEx",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 10 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3880,
+        1640
+      ],
+      "id": "43b04728-186c-47b0-b90b-0e01b7d6ae90",
+      "name": "10:30 AM | Short-form Schedule"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Long-form": {
+      "main": [
+        [
+          {
+            "node": "Get All Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Refresh Token": {
+      "main": [
+        [
+          {
+            "node": "Threads | Create Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Blocks": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Create Post": {
+      "main": [
+        [
+          {
+            "node": "Threads | Publish Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Create Replies List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Publish Post": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Mark as Posted",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Threads | Create Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Create Reply": {
+      "main": [
+        [
+          {
+            "node": "Threads | Publish Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Publish Reply": {
+      "main": [
+        [
+          {
+            "node": "Create Reply Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Replies List": {
+      "main": [
+        [
+          {
+            "node": "Threads | Refresh Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Reply Data": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short-form": {
+      "main": [
+        [
+          {
+            "node": "Threads | Refresh Token Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Publish Short Post": {
+      "main": [
+        [
+          {
+            "node": "Mark Short as Posted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Create Short Post": {
+      "main": [
+        [
+          {
+            "node": "Threads | Publish Short Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Refresh Token Short": {
+      "main": [
+        [
+          {
+            "node": "Threads | Create Short Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6:00 AM | Tues, Thrus, Sat | Short-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "7:00 AM | Sun, Wed, Fri | Short-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "5:00 AM | Mon | Short-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "3:30 PM | Sun, Mon, Tues, Thrus, Fri | Short-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "4:00 PM | Wed, Sat | Short-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "6:00PM | Mon, Wed | Short-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "6:30PM | Sun, Thrus | Short-form Schedule1": {
+      "main": [
+        []
+      ]
+    },
+    "7:00PM | Tues, Fri | Short-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "8:00PM | Sat | Short-form Schedule1": {
+      "main": [
+        []
+      ]
+    },
+    "5:30 AM | Mon | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "8:30 PM | Sat | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "7:30 PM | Tues, Fri | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "7:00 PM | Sun, Thru | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "6:30 PM | Mon, Wed | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "4:30 PM | Wed, Sat | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "4:00 PM | Sun, Mon, Tues, Thru, Fri | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "7:30 AM | Sun, Wed, Fri | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "6:30 AM | Tues, Thru, Sat | Long-form Schedule": {
+      "main": [
+        []
+      ]
+    },
+    "7:00 PM | Long-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Long-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10:30 AM | Long-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Long-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3:30 PM | Short-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Short-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        []
+      ]
+    },
+    "10:30 AM | Short-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Short-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Karachi",
+    "callerPolicy": "workflowsFromSameOwner",
+    "saveExecutionProgress": true
+  },
+  "versionId": "5dd2965c-d514-4497-b4e6-aad2597c2740",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "733c12daec8a4c24bb4b2e1e11f73be12c3c73f30259e17e0534601264004313"
+  },
+  "id": "9mmQbKUvxdOJezls",
+  "tags": [
+    {
+      "createdAt": "2025-07-22T15:43:10.840Z",
+      "updatedAt": "2025-07-22T15:43:10.840Z",
+      "id": "VSShAHTzEgUDDSJS",
+      "name": "Posting"
+    }
+  ]
+}

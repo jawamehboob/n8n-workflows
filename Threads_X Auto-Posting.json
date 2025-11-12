@@ -1,0 +1,1488 @@
+{
+  "name": "Threads/X Auto-Posting",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "221ef199-ac70-8021-80cc-d8ee38422a78",
+          "mode": "list",
+          "cachedResultName": "Long-form",
+          "cachedResultUrl": "https://www.notion.so/221ef199ac70802180ccd8ee38422a78"
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Threads Posted?|checkbox",
+              "condition": "equals"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "timestamp": true,
+                "key": "created_time",
+                "direction": "ascending"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        6256
+      ],
+      "id": "352ecfd0-3eb6-40e9-a229-07293fdad76a",
+      "name": "Long-form",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "222ef199-ac70-804b-8e2d-f06b4974d492",
+          "mode": "list",
+          "cachedResultName": "Short-form",
+          "cachedResultUrl": "https://www.notion.so/222ef199ac70804b8e2df06b4974d492"
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Threads Posted?|checkbox",
+              "condition": "equals"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "timestamp": true,
+                "key": "created_time",
+                "direction": "ascending"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        5680
+      ],
+      "id": "5b0da216-eb91-4f48-a3b4-bd021101981f",
+      "name": "Short-form",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.threads.net/refresh_access_token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "th_refresh_token"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        6256
+      ],
+      "id": "448a8a34-92d3-4c60-9b7a-af2007785d72",
+      "name": "Threads | Refresh Token",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Long-form').item.json.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1072,
+        6256
+      ],
+      "id": "30b5088b-8a02-405b-a0bc-d914f559be95",
+      "name": "Threads | Create Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "operation": "getAll",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "limit": 100
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        6256
+      ],
+      "id": "c71fa31c-2285-446a-91e7-0a6606ac3fc7",
+      "name": "Get All Blocks",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "blocks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        400,
+        6256
+      ],
+      "id": "740e5630-c0cc-4a04-bccc-ef1ad60c10e7",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f51d616-5654-4c2f-a9ed-240e3099f14d",
+              "name": "posts",
+              "value": "={{ $('Create Replies List').item.json.posts }}",
+              "type": "array"
+            },
+            {
+              "id": "c35af718-ffad-4cb8-b7e6-59bd1f2f49c0",
+              "name": "postId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        6256
+      ],
+      "id": "bfcd5b60-3fd1-4bb0-b725-beda65cd346e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        6256
+      ],
+      "id": "70f25147-16ec-43c4-ae7c-fcc7c8d1fb0d",
+      "name": "Threads | Publish Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eade1164-fe12-4737-9ce4-555c7eeab441",
+              "leftValue": "={{ $json.posts.length }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1744,
+        6256
+      ],
+      "id": "c8197795-44b1-4021-959b-d96546512708",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.posts[0] }}"
+            },
+            {
+              "name": "reply_to_id",
+              "value": "={{ $json.postId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1968,
+        6064
+      ],
+      "id": "cd62b71b-347e-4dd1-99b1-944b5bf86b2d",
+      "name": "Threads | Create Reply",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2192,
+        6064
+      ],
+      "id": "e50faf64-4610-488c-95f0-36324412f6f7",
+      "name": "Threads | Publish Reply",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = ['']\n\nfor (const item of $input.first().json.blocks) {\n  const content = item.content\n  if (typeof content !== \"string\") continue\n  if (Number.isInteger(+content[0]) || content.startsWith(\"TD;LR\")) {\n    posts.push(content)\n    continue\n  }\n\n  if (content.startsWith('CTA')) {\n    posts.push(\"\")\n    continue\n  }\n  \n  const lastIdx = posts.length - 1\n  posts[lastIdx] = posts[lastIdx] + `\\n${content}`\n}\n\nreturn { posts: posts.filter(Boolean) };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        6256
+      ],
+      "id": "2adb6b81-772b-4fb3-b9de-8e89fc2535e3",
+      "name": "Create Replies List"
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $('If').first().json.posts.slice(1)\n\nreturn { posts, postId:$input.first().json.id };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        6240
+      ],
+      "id": "7ce9bd42-7ea3-4845-ab76-0e348794c093",
+      "name": "Create Reply Data"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Long-form').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Threads Posted?|checkbox",
+              "checkboxValue": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1968,
+        6256
+      ],
+      "id": "d49ce3a4-14d8-4c96-a832-cc046568f6c7",
+      "name": "Mark as Posted",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Short-form').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Threads Posted?|checkbox",
+              "checkboxValue": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        5680
+      ],
+      "id": "9dab5c9e-97f8-4582-ba2b-33d59c345c1e",
+      "name": "Mark Short as Posted",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        5680
+      ],
+      "id": "3ff323e0-c1d5-430b-854b-4a10c52aa6ef",
+      "name": "Threads | Publish Short Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/me/threads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Short-form').item.json.property_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        5680
+      ],
+      "id": "ec27a8ef-83d1-439a-a7f2-11c0d4fa3c4b",
+      "name": "Threads | Create Short Post",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.threads.net/refresh_access_token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "th_refresh_token"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        192,
+        5680
+      ],
+      "id": "305b37a1-3e2d-457e-b68e-a85cbd3ca4b3",
+      "name": "Threads | Refresh Token Short",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "mnQA8Pty80e9bPTk",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 30 10 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        6144
+      ],
+      "id": "490679f8-3a28-46f7-8743-0e8aa91c1e63",
+      "name": "10:30 AM | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 30 15 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        5584
+      ],
+      "id": "68468ac6-ef13-4b91-a229-4bac449a5e8c",
+      "name": "3:30 PM | Short-form Schedule"
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Long-form1').item.json.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        816,
+        7600
+      ],
+      "id": "4d54073d-aff0-4588-8654-edea5c506580",
+      "name": "Create Tweet",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "Zk76HluHUbgIK8DK",
+          "name": "X account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.posts[0] }}",
+        "additionalFields": {
+          "inReplyToStatusId": {
+            "__rl": true,
+            "value": "={{ $json.postId }}",
+            "mode": "id"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        7600
+      ],
+      "id": "e0d813fc-77d6-4572-8a22-f823802de7f4",
+      "name": "Create Reply",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "Zk76HluHUbgIK8DK",
+          "name": "X account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eade1164-fe12-4737-9ce4-555c7eeab441",
+              "leftValue": "={{ $json.posts.length }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1264,
+        7600
+      ],
+      "id": "d085647b-58b4-46a4-a928-4a4b7ff7d53a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $('If1').first().json.posts.slice(1)\n\nreturn { posts, postId:$input.first().json.id };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        7680
+      ],
+      "id": "9f212a24-fa17-4d27-9641-e9c21ace82f0",
+      "name": "Create Reply Data1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f51d616-5654-4c2f-a9ed-240e3099f14d",
+              "name": "posts",
+              "value": "={{ $('Create Replies List1').item.json.posts }}",
+              "type": "array"
+            },
+            {
+              "id": "c35af718-ffad-4cb8-b7e6-59bd1f2f49c0",
+              "name": "postId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        7600
+      ],
+      "id": "ee44958e-fe4c-4f43-9c1a-d76545b74899",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Short-form1').item.json.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        144,
+        7104
+      ],
+      "id": "d4de12a0-4502-4c9d-9c2f-57bdd30601c1",
+      "name": "Create Tweet | Short form",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "Zk76HluHUbgIK8DK",
+          "name": "X account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "222ef199-ac70-804b-8e2d-f06b4974d492",
+          "mode": "list",
+          "cachedResultName": "Short-form",
+          "cachedResultUrl": "https://www.notion.so/222ef199ac70804b8e2df06b4974d492"
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "X  Posted?|checkbox",
+              "condition": "equals"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "timestamp": true,
+                "key": "created_time",
+                "direction": "ascending"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        7104
+      ],
+      "id": "f5c8fd20-76b0-434c-8cc4-243c0698a527",
+      "name": "Short-form1",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Short-form1').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "X  Posted?|checkbox",
+              "checkboxValue": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        7104
+      ],
+      "id": "f0f3ede2-de5e-4e27-b30e-eb3a1ce6c5d0",
+      "name": "Mark Short as Posted1",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "221ef199-ac70-8021-80cc-d8ee38422a78",
+          "mode": "list",
+          "cachedResultName": "Long-form",
+          "cachedResultUrl": "https://www.notion.so/221ef199ac70802180ccd8ee38422a78"
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "X Posted?|checkbox",
+              "condition": "equals"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "timestamp": true,
+                "key": "created_time",
+                "direction": "ascending"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        7600
+      ],
+      "id": "4338bad8-e605-45c2-b23a-5c91f155eb16",
+      "name": "Long-form1",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "operation": "getAll",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "limit": 100
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        7600
+      ],
+      "id": "26e8ba0e-e41d-46b5-a863-0ba76a766763",
+      "name": "Get All Blocks1",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "blocks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        368,
+        7600
+      ],
+      "id": "28ec1696-243b-4cd6-9cc7-98f23a459d38",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = ['']\n\nfor (const item of $input.first().json.blocks) {\n  const content = item.content\n  if (typeof content !== \"string\") continue\n  if (Number.isInteger(+content[0]) || content.startsWith(\"TD;LR\")) {\n    posts.push(content)\n    continue\n  }\n\n  if (content.startsWith('CTA')) {\n    posts.push(\"\")\n    continue\n  }\n  \n  const lastIdx = posts.length - 1\n  posts[lastIdx] = posts[lastIdx] + `\\n${content}`\n}\n\nreturn { posts: posts.filter(Boolean) };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        7600
+      ],
+      "id": "9a33b4ef-96ce-4c5d-80fc-3415706103ba",
+      "name": "Create Replies List1"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Long-form1').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "X Posted?|checkbox",
+              "checkboxValue": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        7408
+      ],
+      "id": "df18df13-9d71-45cf-a2b9-460bb256e354",
+      "name": "Mark as Posted1",
+      "credentials": {
+        "notionApi": {
+          "id": "mNYjDL1KPNhfsPeM",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 18 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        6336
+      ],
+      "id": "7a42b9dd-46b5-48bf-a578-880eac04c347",
+      "name": "6:00 PM | Long-form Schedule",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 18 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        7008
+      ],
+      "id": "9f3d904a-7e8b-4ef5-a2ce-aed37cb2b273",
+      "name": "6:00 PM | Short-form Schedule1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 22 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        7200
+      ],
+      "id": "5acd8f1b-294d-4905-9648-aba5ff991292",
+      "name": "10:00 PM | Short-form Schedule1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 20 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        7600
+      ],
+      "id": "7e1d0974-acbc-4622-b22c-2e3ad1561f54",
+      "name": "8:00 PM | Long-form Schedule1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 18 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        5776
+      ],
+      "id": "9e827994-c926-4833-be29-53dc1092cb8a",
+      "name": "6:00 PM | Short-form Schedule"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Long-form": {
+      "main": [
+        [
+          {
+            "node": "Get All Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Refresh Token": {
+      "main": [
+        [
+          {
+            "node": "Threads | Create Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Blocks": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Create Post": {
+      "main": [
+        [
+          {
+            "node": "Threads | Publish Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Create Replies List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Publish Post": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Mark as Posted",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Threads | Create Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Create Reply": {
+      "main": [
+        [
+          {
+            "node": "Threads | Publish Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Publish Reply": {
+      "main": [
+        [
+          {
+            "node": "Create Reply Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Replies List": {
+      "main": [
+        [
+          {
+            "node": "Threads | Refresh Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Reply Data": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short-form": {
+      "main": [
+        [
+          {
+            "node": "Threads | Refresh Token Short",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Publish Short Post": {
+      "main": [
+        [
+          {
+            "node": "Mark Short as Posted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Create Short Post": {
+      "main": [
+        [
+          {
+            "node": "Threads | Publish Short Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads | Refresh Token Short": {
+      "main": [
+        [
+          {
+            "node": "Threads | Create Short Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10:30 AM | Long-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Long-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3:30 PM | Short-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Short-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Tweet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Reply": {
+      "main": [
+        [
+          {
+            "node": "Create Reply Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Mark as Posted1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Reply Data1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as Posted": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Tweet | Short form": {
+      "main": [
+        [
+          {
+            "node": "Mark Short as Posted1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short-form1": {
+      "main": [
+        [
+          {
+            "node": "Create Tweet | Short form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Long-form1": {
+      "main": [
+        [
+          {
+            "node": "Get All Blocks1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Blocks1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Create Replies List1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Replies List1": {
+      "main": [
+        [
+          {
+            "node": "Create Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6:00 PM | Long-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Long-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6:00 PM | Short-form Schedule1": {
+      "main": [
+        [
+          {
+            "node": "Short-form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10:00 PM | Short-form Schedule1": {
+      "main": [
+        [
+          {
+            "node": "Short-form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8:00 PM | Long-form Schedule1": {
+      "main": [
+        [
+          {
+            "node": "Long-form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6:00 PM | Short-form Schedule": {
+      "main": [
+        [
+          {
+            "node": "Short-form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "Asia/Karachi"
+  },
+  "versionId": "1f3f2741-077b-4258-ba33-2a460e0f1a08",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ba5dab70f0a0b098b9aea08e4d4567ac7b7a19f279fa48c41316a5d09d75d1dd"
+  },
+  "id": "cA51effYjK78TgOt",
+  "tags": [
+    {
+      "createdAt": "2025-08-04T11:51:41.534Z",
+      "updatedAt": "2025-08-04T11:51:41.534Z",
+      "id": "MlP7jOkfMlCkJiO9",
+      "name": "Posting"
+    }
+  ]
+}

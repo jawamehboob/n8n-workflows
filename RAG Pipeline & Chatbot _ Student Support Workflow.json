@@ -1,0 +1,1034 @@
+{
+  "name": "RAG Pipeline & Chatbot / Student Support Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1GS07MJGq6qMqNGANK7juUTRCSv6MHLbd",
+          "mode": "list",
+          "cachedResultName": "Subject: Data Science ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1GS07MJGq6qMqNGANK7juUTRCSv6MHLbd"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        140,
+        -260
+      ],
+      "id": "d66f4dfa-f184-45b7-b793-d8529036e1c9",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cWuqr19VvkybusSK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "sample2",
+          "mode": "list",
+          "cachedResultName": "sample2"
+        },
+        "options": {
+          "pineconeNamespace": "Data Mining"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        600,
+        -460
+      ],
+      "id": "f8ead1c1-20af-49b1-b4c8-a515ccf1539c",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "sE6qI8XPiwbcwDqU",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        580,
+        -240
+      ],
+      "id": "abc9ac52-c375-4190-bf3d-60c15852fb3b",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aVy4RhjfpTbE6LXo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        -200
+      ],
+      "id": "49bc3aad-e0d8-4ed8-a334-a15b0af154d7",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        -460
+      ],
+      "id": "e185804a-a60a-43ee-b2dd-cf662743521e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        680
+      ],
+      "id": "85f05b3f-c43d-4ff0-9287-f030dc602d28",
+      "name": "When chat message received",
+      "webhookId": "f9c4d1b7-f08c-4be6-9e32-0229e0d830d3"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        -240
+      ],
+      "id": "7b3f47cc-c432-453c-bfea-a73a5c281fed",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fETqhDOZ2IY0xvCq",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Information about data mining",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "sample2",
+          "mode": "list",
+          "cachedResultName": "sample2"
+        },
+        "includeDocumentMetadata": false,
+        "options": {
+          "pineconeNamespace": "Data Mining"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1420,
+        -240
+      ],
+      "id": "d8f8bbf5-9698-434d-a597-43decbe4dd7e",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "sE6qI8XPiwbcwDqU",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        -40
+      ],
+      "id": "edf87d4b-4c9b-4ee2-a6cf-79aeff97f2e3",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aVy4RhjfpTbE6LXo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        880,
+        20
+      ],
+      "id": "a36858c0-574c-4b7c-8999-5e755fa8ab32",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "sample",
+          "mode": "list",
+          "cachedResultName": "sample"
+        },
+        "options": {
+          "pineconeNamespace": "Data Mining"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        660,
+        680
+      ],
+      "id": "f30625eb-f3e9-4d05-bd15-7a2f66b71f38",
+      "name": "Pinecone Vector Store2",
+      "credentials": {
+        "pineconeApi": {
+          "id": "sE6qI8XPiwbcwDqU",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        920
+      ],
+      "id": "a5b2eafa-ca38-4427-8abb-c1d49c919975",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        680
+      ],
+      "id": "f19cae83-e0b1-409e-9742-65f65404d01d",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        900
+      ],
+      "id": "ab5e72ab-6fb0-4e71-9c81-2556d2580b6d",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fETqhDOZ2IY0xvCq",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Information about data mining, their steps, tools and examples",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "sample",
+          "mode": "list",
+          "cachedResultName": "sample"
+        },
+        "includeDocumentMetadata": false,
+        "options": {
+          "pineconeNamespace": "Data Mining"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        900
+      ],
+      "id": "d3cd6eeb-b38b-4cba-bd04-ad0c3bdbbb20",
+      "name": "Pinecone Vector Store3",
+      "credentials": {
+        "pineconeApi": {
+          "id": "sE6qI8XPiwbcwDqU",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        940,
+        1140
+      ],
+      "id": "77e68b26-baf0-4ac6-afd7-c1ba9e6556bf",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        680,
+        920
+      ],
+      "id": "8668d73c-0b3e-4ad6-91f4-60c05f812df0",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "uhJKTzSrdIBnp03P",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        1120
+      ],
+      "id": "16226d43-f3e4-4909-9086-bc851c966878",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "uhJKTzSrdIBnp03P",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1GS07MJGq6qMqNGANK7juUTRCSv6MHLbd",
+          "mode": "list",
+          "cachedResultName": "Subject: Data Science ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1GS07MJGq6qMqNGANK7juUTRCSv6MHLbd"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        860
+      ],
+      "id": "1422b1cd-3f34-4c05-babb-faca90f62f0b",
+      "name": "Data Mining File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cWuqr19VvkybusSK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        360,
+        -260
+      ],
+      "id": "ce2546a6-353b-4fbb-8772-56f34003650f",
+      "name": "Download file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cWuqr19VvkybusSK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        420,
+        860
+      ],
+      "id": "d05095ad-b28c-46ab-b0a5-bb558fce7b66",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cWuqr19VvkybusSK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 1. RAG Pipeline & Chatbot\n",
+        "height": 920,
+        "width": 1720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "8c6cbd0b-5dac-402e-8573-05216122c0ac",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        2020,
+        820
+      ],
+      "id": "283ca579-7e15-4b4c-988a-641696c1c83b",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5UFm4sm2KcqV5BV7",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Learn Data Mining",
+              "description": "An email that is related to helping the student. They may be asking questions about data mining subject basically related to learning"
+            },
+            {
+              "category": "Other",
+              "description": "Any email not related to learning"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        2240,
+        820
+      ],
+      "id": "1e2a6ba1-64a1-4dd7-823e-b2e2f6e2c827",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2220,
+        1060
+      ],
+      "id": "c6ceeba7-cfde-4b0c-bd41-22f36f60e07b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "4LHC7mGW5tvnbThn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2620,
+        1120
+      ],
+      "id": "aeb255b4-cafc-40bd-8db4-04e01e7d973c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2640,
+        900
+      ],
+      "id": "ef59de1e-8432-458f-a03e-c68426743ab2",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "4LHC7mGW5tvnbThn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3100,
+        680
+      ],
+      "id": "56994287-ad92-417e-803a-62dbf186298a",
+      "name": "Reply to a message",
+      "webhookId": "64281d70-18f1-4e32-9c35-a3382e7daca9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5UFm4sm2KcqV5BV7",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "#Overview\nYou are a student support agent. Your job is to respond to the incoming emails with relevant information about learning via knowledgeBase tool.\n\n##Instructions\n- Your outputs should be friendly and use emojis but don't use too much emojis\n- Use the simple language to guide them\n- Sign off as Miss Helpful from Jaweria Mehboob's Teaching Center\n\n##Output\n- Output only the body content of the email"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        680
+      ],
+      "id": "7f3ac9fb-7a1b-4872-86bd-b3f15bb208e5",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to know about the Data Mining or for teaching students",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "sample",
+          "mode": "list",
+          "cachedResultName": "sample"
+        },
+        "options": {
+          "pineconeNamespace": "Data Mining"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2920,
+        900
+      ],
+      "id": "4c5e2ec0-512d-487e-83a0-4d60a58e3894",
+      "name": "Pinecone Vector Store4",
+      "credentials": {
+        "pineconeApi": {
+          "id": "sE6qI8XPiwbcwDqU",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3080,
+        1100
+      ],
+      "id": "62d37459-dbb4-4c1f-a9bc-f2e1f7d121dc",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "4LHC7mGW5tvnbThn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 2. Student Support Workflow",
+        "height": 920,
+        "width": 1460,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1900,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "66ec8f7d-ee25-4a14-b0bf-0f9fac03e71a",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "1984ae03b749cc26",
+          "threadId": "1984ae03b749cc26",
+          "labelIds": [
+            "UNREAD",
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 5921,
+          "headers": {
+            "delivered-to": "Delivered-To: jaweriamehboob043@gmail.com",
+            "received": "Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])\r\n        by mx.google.com with SMTPS id 46e09a7af769-74148200f44sor1093644a34.12.2025.07.27.00.54.25\r\n        for <jaweriamehboob043@gmail.com>\r\n        (Google Transport Security);\r\n        Sun, 27 Jul 2025 00:54:25 -0700 (PDT)",
+            "x-received": "X-Received: by 2002:a05:6830:4487:b0:73b:1efa:5f40 with SMTP id\r\n 46e09a7af769-7413dc619bamr5147452a34.10.1753602864993; Sun, 27 Jul 2025\r\n 00:54:24 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1753602865; cv=none;\r\n        d=google.com; s=arc-20240605;\r\n        b=hfg1cSGFubb6vo5Mgw0jueFo4qNER11fODr3NpzeFfntUbY2mp4Ksr1+zcFWgOdz4n\r\n         4rYKzIJ4iCDgfsCk7SNQ9vy/zNLq5YtmcZotwTdq7/nN9++kFPF83n0zOu9Mzc2tdFXY\r\n         Q1k8n2L1F57EZSoQeJTLJhpzbhX2blS7jbgb8/tzSCf4JcEtPnI/Hxv+pwc6hhCscRXi\r\n         yGSG10IxnC8mEPhphV4wM+z2X8xPsTgcj8+/7Hr/TLUlnQFzGCG0tAC3gr3JsBy88dtI\r\n         KG/DTVIWZBa5sHF/wPQZp1k0VWJ8g//d5MDFZdB5C7K8DYZBY+GPIIUu8gqamGFOC7kx\r\n         5drw==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=7X123SCZU80NJIcrFevRwUNWsCqNHarsb8n3a9N4fv8=;\r\n        fh=7cOLqXolIdGhewowRPfooLHvDD/txxqyx1W3kFW/YvY=;\r\n        b=MCodYIiGscH/XEr1yGdl887w43IM+1QB6qkyi29ETKGRYMijUmBkxWfbGzoDKQizjC\r\n         PnMGFO19XxD4h8zkgT1nllbMALFwnN2p3dM6Xdwqc/qApWi5KLmh3KxCTEeAew+/KV2B\r\n         3pTaB7mxKl6fkNCFiJpU4xGrGYIXh7qOD79sTVO3qWahBJx2Zb5T8EeYNcd41aUXcvnr\r\n         PxbuLBbeKe9FIHritNCNSkfITUWpnPlwxd641cGGuDQjnTX75o+KmPFPs8s/eIC1f2GT\r\n         btISQjiNj/WNY8ERfHbSNXqivp/3yWEWOrbV5vw+Kl045tZXz+At0gbzxq4Yr6zeC42E\r\n         solg==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20230601 header.b=\"O/M+ZtI4\";\r\n       spf=pass (google.com: domain of creativejaweriamehboob@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=creativejaweriamehboob@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "return-path": "Return-Path: <creativejaweriamehboob@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of creativejaweriamehboob@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20230601 header.b=\"O/M+ZtI4\";\r\n       spf=pass (google.com: domain of creativejaweriamehboob@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=creativejaweriamehboob@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20230601; t=1753602865; x=1754207665; dara=google.com;\r\n        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject\r\n         :date:message-id:reply-to;\r\n        bh=7X123SCZU80NJIcrFevRwUNWsCqNHarsb8n3a9N4fv8=;\r\n        b=O/M+ZtI4JRwMTuxwrGxnWOlh0Pi90U/ZMacZtHeSuxaCRX5/SnjIw/HqZLlQwiaVes\r\n         DSdPIlSKXOQDSPg/km5njYQqAkiZru6PF/BnS3hpCKpGK0zPgpLL5WQN90ocExEkDmRC\r\n         /GUHAkSrd27VASYZuGiTh2xAlLBnkzh61hn9QLKD1jN503SvlpA9BAARkW6/3iaE22kh\r\n         zmQiaWA4by2glrbnIfYUcDP7f2LzTh7r3k04WqLIoePyfUTowEaG/GCJ8s1226qId7lG\r\n         +Rk+SdcBdHsXPgg6kCSmiK8nTRXpkV6JlBgf8RCQ8WimxJhdHTTBIm/t55j/DF2uI2tO\r\n         XOcw==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20230601; t=1753602865; x=1754207665;\r\n        h=to:subject:message-id:date:from:mime-version:x-gm-message-state\r\n         :from:to:cc:subject:date:message-id:reply-to;\r\n        bh=7X123SCZU80NJIcrFevRwUNWsCqNHarsb8n3a9N4fv8=;\r\n        b=M3A+AKQZ/+MyIUsEGUIpVUXFrDwrIz+LDhEVOXyF+Ko3KkM570SdG4KSjvr8kGy017\r\n         mNkF47ldge3AHuUOuPZOsYpbSZC0Aslgai3tYInidDhAHtLuwh/e497e/uyA/U3ytS+v\r\n         E7J0Ve6HyuW/JWDTA4d0HUYFpcP32Utqqb+xgIVPOizUrK6hqmzWmmXI38ZCXfYSD2hb\r\n         O1vQVM5wNGdG65XXv1RsW85hrvHhq4BReVFuWueymh1Jbf87PnXk5WOeeo4WZSjorafx\r\n         r9ppPq+Px9gU/M+FxPPlOh14ASxlvf0J4SqNgUGVyk1bo2MJU+pg4hh3fWvmC3eCO1iy\r\n         vneA==",
+            "x-gm-message-state": "X-Gm-Message-State: AOJu0YzkfPAuEhwmBpIzNvS3tQzGte5Gy/s+QgWuJzq0BTaEVmKfruwA\r\n\tLJ6Lx8MfIX6Oh5mFvw4HcdGWa1+3nzt+5iGiURX3uLXzFNxfD/Of8v5+sEvzuLOotPw0YvWbggB\r\n\tNCIHw1y3AQlioSlp3jbWZNC/CA2SKG0Fy49HqrCAOPQ==",
+            "x-gm-gg": "X-Gm-Gg: ASbGnct1bxgsc5ydZD8DW5riCTo9GvX23AvB4S0M/H+EnmEGFgxInM9SfYW3mGigvEm\r\n\thb3ZF33Mb0VkywaiDA4fsof+zaR/1yIh2amy0XcD5cBMEHVnZ+fyEWO2mP/mUkxPah+aEZWMaMq\r\n\te2ONIBaIWBo4eja3ZHF2Pph7e0+WGelhtnJ7bCOqnbnZc4bZ1PvPzyOEyTvTL28eyprKdh9XatC\r\n\tMC4QnNluaGSuMEHN0UJ",
+            "x-google-smtp-source": "X-Google-Smtp-Source: AGHT+IFhDZBrNmuuMM6hFGBz0oyrrYAWmuqaxApG8D22hInpq0s7D2M8MA8cToPF3qiXfuBlMub6PfNAZ2fHN62O2k8=",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Jaweria Mehboob <creativejaweriamehboob@gmail.com>",
+            "date": "Date: Sun, 27 Jul 2025 12:54:13 +0500",
+            "x-gm-features": "X-Gm-Features: Ac12FXyf1YeKWLsrxVNdFSLbJAy831uT8pRayGYYahFYFWnjltunTlDwwTRrT8Y",
+            "message-id": "Message-ID: <CAE9tJrjkXaBjBR-y5K951U96o0XzpOG_McV8ySBjLaeGnQVsYA@mail.gmail.com>",
+            "subject": "Subject: ",
+            "to": "To: jaweriamehboob043@gmail.com",
+            "content-type": "Content-Type: multipart/alternative; boundary=\"000000000000d85b41063ae47b02\""
+          },
+          "html": "<div dir=\"ltr\">Could you give me examples of data mining? I want to know where it used to be<br><br>Thank you<br><div><br></div></div>\n",
+          "text": "Could you give me examples of data mining? I want to know where it used to\nbe\n\nThank you\n",
+          "textAsHtml": "<p>Could you give me examples of data mining? I want to know where it used to<br/>be</p><p>Thank you</p>",
+          "date": "2025-07-27T07:54:13.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "jaweriamehboob043@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:jaweriamehboob043@gmail.com\" class=\"mp_address_email\">jaweriamehboob043@gmail.com</a></span>",
+            "text": "jaweriamehboob043@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "creativejaweriamehboob@gmail.com",
+                "name": "Jaweria Mehboob"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Jaweria Mehboob</span> &lt;<a href=\"mailto:creativejaweriamehboob@gmail.com\" class=\"mp_address_email\">creativejaweriamehboob@gmail.com</a>&gt;</span>",
+            "text": "\"Jaweria Mehboob\" <creativejaweriamehboob@gmail.com>"
+          },
+          "messageId": "<CAE9tJrjkXaBjBR-y5K951U96o0XzpOG_McV8ySBjLaeGnQVsYA@mail.gmail.com>"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store3": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Mining File": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file2": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store4": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store4",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d5f9ca8a-13d3-428c-b8f2-a48a174027e9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "733c12daec8a4c24bb4b2e1e11f73be12c3c73f30259e17e0534601264004313"
+  },
+  "id": "5dID2DCG1H2FAT8m",
+  "tags": []
+}

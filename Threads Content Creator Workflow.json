@@ -1,0 +1,311 @@
+{
+  "name": "Threads Content Creator Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8",
+          "mode": "list",
+          "cachedResultName": "Threads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Todo"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        300,
+        0
+      ],
+      "id": "ce233779-1608-4043-a15b-9f400abe7c31",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Y4c1jthmVvRw8VHo",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "=Search the web for {{ $json.Topic }}",
+        "options": {
+          "search_depth": "advanced",
+          "max_results": 3
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavily",
+      "typeVersion": 1,
+      "position": [
+        520,
+        0
+      ],
+      "id": "fa722cbc-15a6-4219-b5b6-61f13f53f2cd",
+      "name": "Search",
+      "credentials": {
+        "tavilyApi": {
+          "id": "zcYJ1ZFpSIuI2mQM",
+          "name": "Tavily account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Source 1: {{ $json.results[0].content }}\nSource 2: {{ $json.results[1].content }}\nSource 3: {{ $json.results[2].content }}\n",
+        "options": {
+          "systemMessage": "You are an expert Meta Threads content creator. Your task: Transform 3 provided resources into 1 viral thread.\n\n## THREAD STRUCTURE (Required)\n\n### 1. Opening Hook (200 characters max)\n- Grab attention in first 5 words\n- Must align with the whole thread\n- Use: curiosity gaps, bold claims, intriguing questions\n- Templates: \"Most people get this backwards...\" / \"Here's what nobody tells you...\"\n\n### 2. Core Content (6-9 points, 500 characters each max)\n- Extract 2-3 insights per resource\n- Format: \"①: [Heading] [Explanation in short points form] [1 emoji]\"\n- Use descriptive subheadings\n\n### 3. Action Step (200 characters max)\n- 1 specific action doable in 24 hours\n- Start with: \"Try this\" / \"Start by\" / \"Take 5 minutes to\"\n\n### 4. Engagement Hook (200 characters max)\n- Ask for experiences/opinions\n- Examples: \"What's worked for you?\" / \"Which surprised you most?\"\n\n## TONE REQUIREMENTS\n- Conversational (like explaining to a smart friend)\n- Confident (no hedge words: maybe, might, could)\n- Optimistic (challenges = opportunities)\n- Relatable (include common experiences)\n\n## EMOJI RULES\n- Exactly 1-2 emojis per section\n- Must relate to content meaning\n- Avoid: 🔥💯✨ (overused)\n- Prefer: industry-specific, action-oriented\n\n## QUALITY CHECKLIST\n☑️ Use 5th grade English level\n☑️ Use active voice\n☑️ Each sentence adds unique value\n☑️ No corporate jargon\n☑️ Logical flow between points\n☑️ Actionable over theoretical\n☑️ Personal voice + professional expertise\n☑️ Zero hashtags\n\n## OUTPUT FORMAT\n[HOOK + 1-2 emojis]\n\n①: [Subheading]\n[Explanation in short points form] [1 emoji]\n\n②: [Subheading]\n[Explanation in short points form] [1 emoji]\n\n[Continue 6-9 steps total]\n\n[ACTION STEP] [1-2 emojis]\n\n[ENGAGEMENT QUESTION] [1 emoji]\n\n## SUCCESS CRITERIA\nThread succeeds when it:\n- Makes readers immediately save/share\n- Generates 10+ meaningful comments\n- Teaches something genuinely useful\n- Feels like insider knowledge shared generously\n\n## CONSTRAINTS\n- Total: 2500-3500 characters max\n- No external links or mentions\n- No promotional language\n- Must synthesize ALL 3 resources\n- Pass test: \"Would I stop scrolling to read this?\"\n\nReady to create your viral thread."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        740,
+        0
+      ],
+      "id": "7e714032-bffa-49ed-a655-ee677254e9a2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        820,
+        220
+      ],
+      "id": "3681700a-ab70-4add-8df1-7def741ab86b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "4LHC7mGW5tvnbThn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8",
+          "mode": "list",
+          "cachedResultName": "Threads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Created",
+            "Content": "={{ $json.output }}",
+            "Topic": "={{ $('Get row(s) in sheet').item.json.Topic }}"
+          },
+          "matchingColumns": [
+            "Topic"
+          ],
+          "schema": [
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1100,
+        0
+      ],
+      "id": "53e493c8-0ba2-44a2-af98-acb2360a3b87",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Y4c1jthmVvRw8VHo",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8",
+          "mode": "list",
+          "cachedResultName": "Threads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1RCOiz2d9HwUZuyV_USuXjyV35oa5MJZvBCSoPSzTtr8/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        0
+      ],
+      "id": "4ecdeafd-d802-411b-831d-a684917a8af9",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "J14lNkNDoviRWmxH",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c4360684-fb64-4d07-ae41-eed331a20acc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "733c12daec8a4c24bb4b2e1e11f73be12c3c73f30259e17e0534601264004313"
+  },
+  "id": "MftqzM2AyB1mMH8u",
+  "tags": []
+}
